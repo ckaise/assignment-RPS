@@ -10,6 +10,7 @@ import meltwater.domain.GameResultType;
 import meltwater.domain.HandType;
 import meltwater.domain.Score;
 import meltwater.service.MatchService;
+import meltwater.service.ScoreService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,26 +21,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class RockPaperScissorController {
 
     public final static String GAME_PATH = "/game";
-    private final MatchService service;
-    private final Score score = new Score();
+    private final MatchService matchService;
+    private final ScoreService scoreService;
 
     @PostMapping(GAME_PATH)
     public GameResponse game(@RequestBody final GameRequest request) {
         boolean isValid = HandType.KEYS.contains(request.getHand());
 
         if (isValid) {
-            final HandType computerHand = service.generateComputerHand();
-            final GameResultType result = service.getPlayerGameResult(HandType.valueOf(request.getHand()), computerHand);
-
-            final Score currentGameScore;
-            synchronized (score) {
-                switch(result) {
-                    case WON: score.setWon(score.getWon() + 1); break;
-                    case DRAW: score.setDraw(score.getDraw() + 1); break;
-                    case LOST: score.setLost(score.getLost() + 1); break;
-                }
-                currentGameScore = Score.builder().won(score.getWon()).draw(score.getDraw()).lost(score.getLost()).build();
-            }
+            final HandType computerHand = matchService.generateComputerHand();
+            final GameResultType result = matchService.getPlayerGameResult(HandType.valueOf(request.getHand()), computerHand);
+            final Score currentGameScore = scoreService.calculate(result);
 
             return GameResponse.builder()
                 .result(result)

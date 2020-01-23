@@ -1,5 +1,5 @@
 # Assignment RPS
-This assignment implemented `Extras` version including `Lizard` & `Spock`
+This assignment implemented `Extras` version including `Lizard` & `Spock` and score
 
 ## How to build and run
 ./mvnw package
@@ -22,8 +22,7 @@ docker run -p 4567:4567 -d meltwater/rpc-docker
 
 ## Response with score
 
-```{"result":"WON","computerHand":"PAPER","score":"1/1"}```
+```{"result":"WON","computerHand":"PAPER","score":{"won":1,"draw":0,"lost":0}}```
 
-score: win counter / total of game
 
 
